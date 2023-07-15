@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using HatersRating.Data;
 using HatersRating.Models;
-// using minimal_api_desenvolvedor_io.Data;
-// using minimal_api_desenvolvedor_io.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -19,8 +17,7 @@ app.UseHttpsRedirection();
 
 app.MapGet("/Ratings", async (HatersRatingContextDb context) =>
 {
-    Results.Ok();
-    return context;
+    await context.Ratings.ToListAsync();
 }
 )
 .WithName("GetAllRatings")

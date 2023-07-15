@@ -1,3 +1,5 @@
+using System;
+
 namespace HatersRating.Models
 {
     class Rating
