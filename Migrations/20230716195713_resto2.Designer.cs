@@ -4,6 +4,7 @@ using HatersRating.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HatersRating.Migrations
 {
     [DbContext(typeof(HatersRatingContextDb))]
-    partial class HatersRatingContextDbModelSnapshot : ModelSnapshot
+    [Migration("20230716195713_resto2")]
+    partial class resto2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,29 +24,6 @@ namespace HatersRating.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("HatersRating.Models.Amizade", b =>
-                {
-                    b.Property<Guid>("AmigoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UsuarioId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("AmigoId");
-
-                    b.ToTable("Amizade", (string)null);
-                });
 
             modelBuilder.Entity("HatersRating.Models.Rating", b =>
                 {
@@ -81,9 +61,6 @@ namespace HatersRating.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("Ativo")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -95,7 +72,7 @@ namespace HatersRating.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 
-                    b.Property<string>("Senha")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 
@@ -127,7 +104,7 @@ namespace HatersRating.Migrations
 
                     b.HasKey("RatingId");
 
-                    b.ToTable("UsuariosRating", (string)null);
+                    b.ToTable("Amizade", (string)null);
                 });
 #pragma warning restore 612, 618
         }
