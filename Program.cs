@@ -6,6 +6,14 @@ using System.Security.Cryptography;
 using System.Text;
 using HatersRating.Helpers;
 
+var webHost = new WebHostBuilder()
+            .UseContentRoot(Directory.GetCurrentDirectory())
+            .Build();
+using (var context = (HatersRatingContextDb)webHost.Services.GetService(typeof(HatersRatingContextDb)))
+{
+    context.Database.Migrate();
+}
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
