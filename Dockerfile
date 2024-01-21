@@ -27,15 +27,6 @@ ARG TARGETARCH
 RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
     dotnet publish -a ${TARGETARCH/amd64/x64} --use-current-runtime --self-contained false -o /app
 
-
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-nanoserver-1903 AS migration
-WORKDIR /source
-COPY . .
-RUN dotnet restore "HatersRating.Migration/HatersRating.Migration.csproj"
-COPY . .
-WORKDIR "/source/HatersRating.Migration"
-RUN dotnet build "HatersRating.Migration.csproj" -c Release -o /app/migration
-
 # If you need to enable globalization and time zones:
 # https://github.com/dotnet/dotnet-docker/blob/main/samples/enable-globalization.md
 ################################################################################
@@ -50,9 +41,6 @@ RUN dotnet build "HatersRating.Migration.csproj" -c Release -o /app/migration
 # version (e.g., aspnet:7.0.10-alpine-3.18),
 # or SHA (e.g., mcr.microsoft.com/dotnet/aspnet@sha256:f3d99f54d504a21d38e4cc2f13ff47d67235efeeb85c109d3d1ff1808b38d034).
 FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS final
-
-WORKDIR /migration
-COPY --from=migration /app/migration .
 
 WORKDIR /app
 
@@ -71,5 +59,10 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 USER appuser
+
+
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+
 
 ENTRYPOINT ["dotnet", "HatersRating.dll"]

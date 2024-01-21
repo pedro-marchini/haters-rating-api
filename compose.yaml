@@ -20,6 +20,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Docker
       ConnectionStrings__DefaultConnection: "Server=db;Database=HatersRating;MultipleActiveResultSets=true;User Id=sa;Password=${DBPASS}"
       AppSettings__DatabaseType: SqlServer
+    command: bash -c "dotnet ef database update"
+
   db:
     image: mcr.microsoft.com/mssql/server:2017-latest
     restart: always
