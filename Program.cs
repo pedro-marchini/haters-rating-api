@@ -18,6 +18,9 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
+app.MapGet("/current_string_connection", (IConfiguration c) => c.GetConnectionString("DefaultConnection"))
+.WithName("connection_string");
+
 #region Usuario
 app.MapGet("/usuario", async (HatersRatingContextDb context) =>
     await context.Usuario.Where(o => o.Ativo == true).ToListAsync()

@@ -262,4 +262,7 @@ __pycache__/
 *.pyc
 
 # Personal notes
-notes*
+_notes*
+
+# env for docker
+.env
