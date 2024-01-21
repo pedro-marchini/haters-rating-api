@@ -4,6 +4,7 @@ using HatersRating.Models;
 using FluentValidation;
 using System.Security.Cryptography;
 using System.Text;
+using HatersRating.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -14,6 +15,7 @@ builder.Services.AddDbContext<HatersRatingContextDb>(options =>
 );
 
 var app = builder.Build();
+DbMigrationHelpers.EnsureSeedData(app).Wait();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
