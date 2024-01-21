@@ -18,7 +18,6 @@ services:
       - db
     environment:
       ASPNETCORE_ENVIRONMENT: Docker
-      ASPNETCORE_URLS: https://+:443;http://+:80
       ConnectionStrings__DefaultConnection: "Server=db;Database=HatersRating;MultipleActiveResultSets=true;User Id=sa;Password=${DBPASS}"
       AppSettings__DatabaseType: SqlServer
   db:
@@ -27,8 +26,6 @@ services:
     container_name: db
     volumes:
       - db-data:/var/lib/sql/data
-    secrets:
-      - db-password
     expose:
       - 1433
     environment:
