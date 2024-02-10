@@ -1,4 +1,5 @@
 using HatersRating.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace HatersRating.Helpers
 {
@@ -23,10 +24,12 @@ namespace HatersRating.Helpers
 
             var ssoContext = scope.ServiceProvider.GetRequiredService<HatersRatingContextDb>();
 
-            await DbHealthChecker.TestConnection(ssoContext);
+            // await DbHealthChecker.TestConnection(ssoContext);
+            ssoContext.Database.Migrate();
+            // await ssoContext.Database.EnsureCreatedAsync();
+            // ssoContext.SaveChanges();
 
-            if (env.IsDevelopment() || env.IsEnvironment("Docker"))
-                await ssoContext.Database.EnsureCreatedAsync();
+            // if (env.IsDevelopment() || env.IsEnvironment("Docker"))
         }
 
     }

@@ -6,14 +6,6 @@ using System.Security.Cryptography;
 using System.Text;
 using HatersRating.Helpers;
 
-var webHost = new WebHostBuilder()
-            .UseContentRoot(Directory.GetCurrentDirectory())
-            .Build();
-using (var context = (HatersRatingContextDb)webHost.Services.GetService(typeof(HatersRatingContextDb)))
-{
-    context.Database.Migrate();
-}
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
@@ -33,13 +25,13 @@ app.MapGet("/current_string_connection", (IConfiguration c) => c.GetConnectionSt
 
 #region Usuario
 app.MapGet("/usuario", async (HatersRatingContextDb context) =>
-    await context.Usuario.Where(o => o.Ativo == true).ToListAsync()
+    await context.Usuario.ToListAsync()
 )
 .WithName("GetAllUsuario")
 .WithTags("Usuario");
 
 app.MapGet("/usuario/{id}", async (Guid id, HatersRatingContextDb context) =>
-    await context.Usuario.SingleOrDefaultAsync(o => o.Ativo == true && o.Id == id)
+    await context.Usuario.SingleOrDefaultAsync(o => o.Id == id)
         is Usuario usuario
             ? Results.Ok(usuario)
             : Results.NotFound()
