@@ -22,10 +22,6 @@ namespace HatersRating.Mapping
                 .IsRequired()
                 .HasColumnType("varchar(200)");
 
-            builder.Property<bool>(x => x.Ativo)
-                .IsRequired()
-                .HasColumnType("bit");
-
         }
     }
 }
