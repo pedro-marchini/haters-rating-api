@@ -5,6 +5,9 @@ using FluentValidation;
 using System.Security.Cryptography;
 using System.Text;
 using HatersRating.Helpers;
+using HatersRating.Dtos;
+using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -25,10 +28,11 @@ app.MapGet("/current_string_connection", (IConfiguration c) => c.GetConnectionSt
 
 #region Usuario
 app.MapGet("/usuario", async (HatersRatingContextDb context) =>
-    await context.Usuario.ToListAsync()
+    Results.Ok(await context.Usuario.ToListAsync())
 )
 .WithName("GetAllUsuario")
-.WithTags("Usuario");
+.WithTags("Usuario")
+.Produces(StatusCodes.Status200OK, typeof(List<Usuario>));
 
 app.MapGet("/usuario/{id}", async (Guid id, HatersRatingContextDb context) =>
     await context.Usuario.SingleOrDefaultAsync(o => o.Id == id)
@@ -37,15 +41,23 @@ app.MapGet("/usuario/{id}", async (Guid id, HatersRatingContextDb context) =>
             : Results.NotFound()
 )
 .WithName("GetByIdUsuario")
-.WithTags("Usuario");
+.WithTags("Usuario")
+.Produces(StatusCodes.Status200OK, typeof(Usuario))
+.Produces(StatusCodes.Status404NotFound);
 
-app.MapPost("/usuario", async (IValidator<Usuario> validator, HatersRatingContextDb context, Usuario usuario) =>
+app.MapPost("/usuario", async (IValidator<UserDto> validator, HatersRatingContextDb context, UserDto user) =>
 {
-    var validationResult = await validator.ValidateAsync(usuario);
+    var validationResult = await validator.ValidateAsync(user);
     if (!validationResult.IsValid) return Results.ValidationProblem(validationResult.ToDictionary());
 
     var password = new Password();
-    usuario.Senha = password.Hash(usuario.Senha);
+
+    var usuario = new Usuario()
+    {
+        Email = user.Email,
+        Senha = password.Hash(user.Password),
+        Nome = user.Name
+    };
 
     context.Usuario.Add(usuario);
     var result = await context.SaveChangesAsync();
@@ -73,30 +85,42 @@ app.MapPost("/usuario", async (IValidator<Usuario> validator, HatersRatingContex
 }
 )
 .WithName("PostUsuario")
-.WithTags("Usuario");
+.WithTags("Usuario")
+.Produces(StatusCodes.Status201Created, typeof(Usuario))
+.Produces(StatusCodes.Status400BadRequest);
 
 // TODO: Analisar melhor oq alterar do usuario (email, senha) endpoint especificos?
-app.MapPut("/usuario/{id}", async (IValidator<Usuario> req, Guid id, HatersRatingContextDb context, Usuario usuario) =>
+app.MapPut("/usuario/{id}", async (IValidator<UserDto> req, Guid id, HatersRatingContextDb context, UserDto user) =>
 {
     var target = await context.Usuario.AsNoTracking<Usuario>().FirstOrDefaultAsync(t => t.Id == id);
     if (target == null) return Results.NotFound();
 
-    var validationResult = await req.ValidateAsync(usuario);
+    var validationResult = await req.ValidateAsync(user);
     if (!validationResult.IsValid) return Results.ValidationProblem(validationResult.ToDictionary());
 
-    // var password = new Password();
-    // var confirmedSenha = password.Verify(usuario.Senha, target.Senha);
+    var password = new Password();
+    var confirmedSenha = password.Verify(user.Password, target.Senha);
+    if (!confirmedSenha) return Results.BadRequest();
+
+    var usuario = new Usuario()
+    {
+        Email = user.Email,
+        Senha = target.Senha,
+        Nome = user.Name
+    };
 
     context.Usuario.Update(usuario);
     var result = await context.SaveChangesAsync();
 
     return result > 0
-        ? Results.Created($"/usuario/{usuario.Id}", usuario)
+        ? Results.Ok(usuario)
         : Results.BadRequest();
 }
 )
 .WithName("PutUsuario")
-.WithTags("Usuario");
+.WithTags("Usuario")
+.Produces(StatusCodes.Status200OK, typeof(Usuario))
+.Produces(StatusCodes.Status400BadRequest);
 
 app.MapDelete("/usuario/{id}", async (Guid id, HatersRatingContextDb context) =>
 {
@@ -112,7 +136,9 @@ app.MapDelete("/usuario/{id}", async (Guid id, HatersRatingContextDb context) =>
 }
 )
 .WithName("DeleteUsuario")
-.WithTags("Usuario");
+.WithTags("Usuario")
+.Produces(StatusCodes.Status204NoContent)
+.Produces(StatusCodes.Status400BadRequest);
 #endregion
 
 #region Rating
