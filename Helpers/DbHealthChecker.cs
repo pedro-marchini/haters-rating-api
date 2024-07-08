@@ -4,12 +4,12 @@ namespace HatersRating.Helpers
 {
     public class DbHealthChecker
     {
-        public static async Task TestConnection(DbContext context)
+        private static async Task TestConnection(DbContext context)
         {
-            var maxAttemps = 10;
-            var delay = 5000;
+            const int maxAttemps = 10;
+            const int delay = 5000;
 
-            for (int i = 0; i < maxAttemps; i++)
+            for (var i = 0; i < maxAttemps; i++)
             {
                 var canConnect = CanConnect(context);
                 if (canConnect)
@@ -20,15 +20,15 @@ namespace HatersRating.Helpers
             }
 
             // after a few attemps we give up
-            throw new Exception("Error wating database. Check ConnectionString and ensure database exist");
+            throw new Exception("Error waiting database. Check ConnectionString and ensure database exist");
         }
 
         public static async Task WaitForTable<T>(DbContext context) where T : class
         {
-            var maxAttemps = 10;
-            var delay = 5000;
+            const int maxAttemps = 10;
+            const int delay = 5000;
 
-            for (int i = 0; i < maxAttemps; i++)
+            for (var i = 0; i < maxAttemps; i++)
             {
                 var tableExist = await CheckTable<T>(context);
                 if (tableExist)
@@ -39,7 +39,7 @@ namespace HatersRating.Helpers
             }
 
             // after a few attemps we give up
-            throw new Exception("Error wating database. Check ConnectionString and ensure database exist");
+            throw new Exception("Error waiting database. Check ConnectionString and ensure database exist");
         }
 
         private static bool CanConnect(DbContext context)
@@ -51,6 +51,7 @@ namespace HatersRating.Helpers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }
@@ -74,8 +75,9 @@ namespace HatersRating.Helpers
                 await db.Set<T>().AnyAsync();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }
