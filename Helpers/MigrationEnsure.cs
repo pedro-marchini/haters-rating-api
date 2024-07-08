@@ -17,7 +17,7 @@ namespace HatersRating.Helpers
             await EnsureSeedData(services);
         }
 
-        public static async Task EnsureSeedData(IServiceProvider serviceProvider)
+        private static Task EnsureSeedData(IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
             var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
@@ -26,6 +26,7 @@ namespace HatersRating.Helpers
 
             // await DbHealthChecker.TestConnection(ssoContext);
             ssoContext.Database.Migrate();
+            return Task.CompletedTask;
             // await ssoContext.Database.EnsureCreatedAsync();
             // ssoContext.SaveChanges();
 
