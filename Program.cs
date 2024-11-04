@@ -21,8 +21,10 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
+#if DEBUG
 app.MapGet("/current_string_connection", (IConfiguration c) => c.GetConnectionString("DefaultConnection"))
     .WithName("connection_string");
+#endif
 
 #region Usuario
 
